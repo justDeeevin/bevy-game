@@ -40,6 +40,14 @@
 
           cargoExtraArgs = "--no-default-features";
 
+          LD_LIBRARY_PATH = lib.makeLibraryPath (
+            with pkgs;
+            [
+              libxkbcommon
+              vulkan-loader
+            ]
+          );
+
           nativeBuildInputs = with pkgs; [
             autoPatchelfHook
             pkg-config
@@ -76,15 +84,7 @@
           // {
             inherit cargoArtifacts;
 
-            postFixup = "wrapProgram $out/bin/bevy-game --prefix LD_LIBRARY_PATH : ${
-              lib.makeLibraryPath (
-                with pkgs;
-                [
-                  libxkbcommon
-                  vulkan-loader
-                ]
-              )
-            }";
+            postFixup = "wrapProgram $out/bin/bevy-game --prefix LD_LIBRARY_PATH : ${commonArgs.LD_LIBRARY_PATH}";
           }
         );
       in
@@ -149,6 +149,7 @@
 
         devShells.default = craneLib.devShell {
           checks = self.checks.${system};
+          inherit (commonArgs) LD_LIBRARY_PATH;
         };
       }
     );
