@@ -1,5 +1,12 @@
 use avian2d::prelude::*;
 use bevy::prelude::*;
+use rand::random_range;
+
+use super::bird::BIRD_SIZE;
+
+const MIN_PIPE_HEIGHT: f32 = 200.0;
+const MIN_GAP: f32 = BIRD_SIZE * 2.5;
+const PIPE_SPEED: f32 = 250.0;
 
 #[derive(Component)]
 pub struct Pipe;
@@ -41,13 +48,21 @@ impl PipeBundle {
             body: RigidBody::Kinematic,
             collider: Collider::rectangle(50.0, height),
             sensor: Sensor,
-            velocity: LinearVelocity(Vec2::new(-100.0, 0.0)),
+            velocity: LinearVelocity(Vec2::new(-PIPE_SPEED, 0.0)),
             marker: Pipe,
         }
     }
 }
 
 pub fn spawn_pair(commands: &mut Commands, window: &Window) {
+    debug!("Spawning pipe pair");
     let window_size = window.size();
-    commands.spawn(PipeBundle::new(500.0, PipePlacement::Top, window_size));
+    let bottom_height = random_range(MIN_PIPE_HEIGHT..(window_size.y - MIN_PIPE_HEIGHT - MIN_GAP));
+    commands.spawn(PipeBundle::new(
+        bottom_height,
+        PipePlacement::Bottom,
+        window_size,
+    ));
+    let top_height = random_range(MIN_PIPE_HEIGHT..(window_size.y - bottom_height - MIN_GAP));
+    commands.spawn(PipeBundle::new(top_height, PipePlacement::Top, window_size));
 }

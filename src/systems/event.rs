@@ -39,6 +39,7 @@ pub fn clear(
     mut transform: Query<&mut Transform, With<Bird>>,
     mut timer: ResMut<SpawnTimer>,
 ) {
+    debug!("Clearing");
     for pipe in &pipes {
         commands.entity(pipe).despawn();
     }

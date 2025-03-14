@@ -4,8 +4,10 @@ mod systems;
 use avian2d::prelude::*;
 use bevy::prelude::*;
 
-use components::bird::Bird;
 use systems::{event, startup, update};
+
+const GRAVITY: f32 = 1000.0;
+const PIPE_TIMER: f32 = 3.0;
 
 #[derive(Debug, Clone, PartialEq, Eq, Hash, States, Default)]
 enum GameState {
@@ -27,8 +29,11 @@ fn main() {
             PhysicsDebugPlugin::default(),
         ))
         .init_state::<GameState>()
-        .insert_resource(Gravity(Vec2::NEG_Y * 800.0))
-        .insert_resource(SpawnTimer(Timer::from_seconds(5.0, TimerMode::Repeating)))
+        .insert_resource(Gravity(Vec2::NEG_Y * GRAVITY))
+        .insert_resource(SpawnTimer(Timer::from_seconds(
+            PIPE_TIMER,
+            TimerMode::Repeating,
+        )))
         .add_systems(Startup, (startup::spawn_bird, startup::spawn_camera))
         .add_systems(
             Update,
