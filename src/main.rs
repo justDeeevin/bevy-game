@@ -1,3 +1,5 @@
+#![allow(clippy::type_complexity)]
+
 mod components;
 mod systems;
 
@@ -21,6 +23,9 @@ enum GameState {
 #[derive(Resource, Deref, DerefMut)]
 struct SpawnTimer(Timer);
 
+#[derive(Resource, Deref, DerefMut)]
+struct Score(u32);
+
 fn main() {
     App::new()
         .add_plugins((
@@ -34,6 +39,7 @@ fn main() {
             PIPE_TIMER,
             TimerMode::Repeating,
         )))
+        .insert_resource(Score(0))
         .add_systems(Startup, (startup::spawn_bird, startup::spawn_camera))
         .add_systems(
             Update,

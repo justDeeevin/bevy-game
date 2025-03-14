@@ -6,7 +6,7 @@ use crate::{
         bird::{jump, Bird},
         pipe::spawn_pair,
     },
-    GameState, SpawnTimer,
+    GameState, Score, SpawnTimer,
 };
 
 pub fn try_jump(
@@ -47,11 +47,17 @@ pub fn try_spawn_pipe(
 }
 
 pub fn check_collisions(
+    mut commands: Commands,
     mut events: EventReader<Collision>,
     mut next_state: ResMut<NextState<GameState>>,
+    mut score: ResMut<Score>,
 ) {
     for Collision(contacts) in events.read() {
         if contacts.is_sensor {
+            commands.entity(contacts.entity2).despawn();
+            **score += 1;
+            info!("New score: {}", **score);
+        } else {
             next_state.set(GameState::Dead);
         }
     }

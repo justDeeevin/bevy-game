@@ -4,9 +4,9 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     components::{
         bird::{jump, Bird},
-        pipe::{spawn_pair, Pipe},
+        pipe::{spawn_pair, Pipe, Scorer},
     },
-    GameState, SpawnTimer,
+    GameState, Score, SpawnTimer,
 };
 
 pub fn start(
@@ -17,13 +17,19 @@ pub fn start(
 ) {
     debug!("Starting");
     *body.single_mut() = RigidBody::Dynamic;
-    spawn_pair(&mut commands, window.single());
+    let window = window.single();
+    spawn_pair(&mut commands, window);
+    let window_size = window.size();
     jump(&mut velocity.single_mut());
+    commands
+        .spawn(Collider::rectangle(0.0, 0.0))
+        .insert(Transform::from_xyz(0.0, (-window_size.y / 2.0) - 1.0, 0.0))
+        .insert(RigidBody::Static);
 }
 
 pub fn kill(
     mut body: Query<&mut RigidBody, With<Bird>>,
-    mut velocities: Query<&mut LinearVelocity, With<Pipe>>,
+    mut velocities: Query<&mut LinearVelocity, Or<(With<Pipe>, With<Scorer>)>>,
 ) {
     debug!("Killing");
     *body.single_mut() = RigidBody::Static;
@@ -33,19 +39,23 @@ pub fn kill(
 }
 
 pub fn clear(
-    pipes: Query<Entity, With<Pipe>>,
+    to_delete: Query<Entity, (Without<Bird>, With<Collider>)>,
     mut commands: Commands,
     mut next_state: ResMut<NextState<GameState>>,
     mut transform: Query<&mut Transform, With<Bird>>,
     mut timer: ResMut<SpawnTimer>,
+    mut score: ResMut<Score>,
 ) {
     debug!("Clearing");
-    for pipe in &pipes {
+    for pipe in &to_delete {
         commands.entity(pipe).despawn();
     }
 
     next_state.set(GameState::Playing);
 
-    transform.single_mut().translation = Vec3::ZERO;
+    let mut transform = transform.single_mut();
+    transform.translation = Vec3::ZERO;
+    transform.rotation = Quat::IDENTITY;
     timer.reset();
+    **score = 0;
 }
