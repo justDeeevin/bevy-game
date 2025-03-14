@@ -49,6 +49,7 @@ fn main() {
                 update::try_spawn_pipe.run_if(in_state(GameState::Playing)),
                 update::check_collisions.run_if(in_state(GameState::Playing)),
                 update::update_score_text.run_if(in_state(GameState::Playing)),
+                update::try_exit,
             ),
         )
         .add_systems(OnEnter(GameState::Playing), event::start)

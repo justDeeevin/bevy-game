@@ -69,3 +69,12 @@ pub fn update_score_text(score: Res<Score>, mut text: Query<&mut Text, With<Scor
     }
 }
 
+pub fn try_exit(
+    keyboard: Res<ButtonInput<KeyCode>>,
+    window: Query<Entity, With<PrimaryWindow>>,
+    mut commands: Commands,
+) {
+    if keyboard.just_pressed(KeyCode::Escape) {
+        commands.entity(window.single()).despawn();
+    }
+}
