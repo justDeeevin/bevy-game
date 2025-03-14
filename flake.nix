@@ -84,7 +84,7 @@
           // {
             inherit cargoArtifacts;
 
-            postFixup = "wrapProgram $out/bin/bevy-game --prefix LD_LIBRARY_PATH : ${commonArgs.LD_LIBRARY_PATH}";
+            postFixup = "wrapProgram $out/bin/flappy-bevy --prefix LD_LIBRARY_PATH : ${commonArgs.LD_LIBRARY_PATH}";
           }
         );
       in
