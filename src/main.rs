@@ -31,6 +31,7 @@ fn main() {
         .add_plugins((
             DefaultPlugins,
             PhysicsPlugins::default(),
+            #[cfg(debug_assertions)]
             PhysicsDebugPlugin::default(),
         ))
         .init_state::<GameState>()
@@ -40,13 +41,14 @@ fn main() {
             TimerMode::Repeating,
         )))
         .insert_resource(Score(0))
-        .add_systems(Startup, (startup::spawn_bird, startup::spawn_camera))
+        .add_systems(Startup, startup)
         .add_systems(
             Update,
             (
                 update::try_jump,
                 update::try_spawn_pipe.run_if(in_state(GameState::Playing)),
                 update::check_collisions.run_if(in_state(GameState::Playing)),
+                update::update_score_text.run_if(in_state(GameState::Playing)),
             ),
         )
         .add_systems(OnEnter(GameState::Playing), event::start)

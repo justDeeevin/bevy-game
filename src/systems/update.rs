@@ -5,6 +5,7 @@ use crate::{
     components::{
         bird::{jump, Bird},
         pipe::spawn_pair,
+        ui::ScoreText,
     },
     GameState, Score, SpawnTimer,
 };
@@ -56,9 +57,15 @@ pub fn check_collisions(
         if contacts.is_sensor {
             commands.entity(contacts.entity2).despawn();
             **score += 1;
-            info!("New score: {}", **score);
         } else {
             next_state.set(GameState::Dead);
         }
     }
 }
+
+pub fn update_score_text(score: Res<Score>, mut text: Query<&mut Text, With<ScoreText>>) {
+    if score.is_changed() {
+        text.single_mut().0 = format!("Score: {}", **score);
+    }
+}
+
