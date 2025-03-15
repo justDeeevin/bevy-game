@@ -32,7 +32,13 @@ struct MaxGap(f32);
 fn main() {
     App::new()
         .add_plugins((
-            DefaultPlugins,
+            DefaultPlugins.set(WindowPlugin {
+                primary_window: Some(Window {
+                    title: "Flappy Bevy".into(),
+                    ..default()
+                }),
+                ..default()
+            }),
             PhysicsPlugins::default(),
             #[cfg(debug_assertions)]
             PhysicsDebugPlugin::default(),
