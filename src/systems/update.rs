@@ -58,7 +58,9 @@ pub fn check_collisions(
     for Collision(contacts) in events.read() {
         if contacts.is_sensor {
             commands.entity(contacts.entity2).despawn();
-            **score += 1;
+            if !score.is_changed() {
+                **score += 1;
+            }
         } else {
             next_state.set(GameState::Dead);
         }
