@@ -1,4 +1,4 @@
-use avian2d::prelude::*;
+use avian2d::{math::PI, prelude::*};
 use bevy::{prelude::*, window::PrimaryWindow};
 
 use crate::{
@@ -9,6 +9,8 @@ use crate::{
     },
     GameState, Score, SpawnTimer,
 };
+
+const ROTATE_SCALE: f32 = 0.01;
 
 pub fn try_jump(
     keyboard: Res<ButtonInput<KeyCode>>,
@@ -77,4 +79,10 @@ pub fn try_exit(
     if keyboard.just_pressed(KeyCode::Escape) {
         commands.entity(window.single()).despawn();
     }
+}
+
+pub fn rotation(mut transform: Query<(&mut Transform, &LinearVelocity), With<Bird>>) {
+    let (mut transform, velocity) = transform.single_mut();
+    let rotation = (velocity.y * ROTATE_SCALE).tanh() * PI / 4.0;
+    transform.rotation = Quat::from_rotation_z(rotation);
 }

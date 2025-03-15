@@ -2,11 +2,11 @@ use avian2d::prelude::*;
 use bevy::prelude::*;
 use rand::random_range;
 
-use super::bird::BIRD_SIZE;
+use super::bird::BIRD_HEIGHT;
 
-const PIPE_WIDTH: f32 = 50.0;
+const PIPE_WIDTH: f32 = 100.0;
 const MIN_PIPE_HEIGHT: f32 = 200.0;
-const MIN_GAP: f32 = BIRD_SIZE * 2.5;
+const MIN_GAP: f32 = BIRD_HEIGHT * 3.5;
 const PIPE_SPEED: f32 = 250.0;
 
 #[derive(Component)]
@@ -73,11 +73,11 @@ impl PipeBundle {
         Self {
             sprite: Sprite::from_color(Color::srgb(1.0, 0.0, 0.0), Vec2::new(PIPE_WIDTH, height)),
             transform: Transform::from_translation(Vec3::new(
-                window_size.x / 2.0 + 25.0,
+                window_size.x / 2.0 + (PIPE_WIDTH / 2.0),
                 placement.signum() * ((window_size.y / 2.0) - height / 2.0),
                 0.0,
             )),
-            collider: Collider::rectangle(PIPE_WIDTH, height),
+            collider: Collider::rectangle(PIPE_WIDTH, height - 20.0),
             marker: Pipe,
         }
     }
@@ -99,7 +99,7 @@ pub fn spawn_pair(commands: &mut Commands, window: &Window) {
     // in between the two pipes
     let scorer_pos = (bottom_height + (window_size.y - top_height)) / 2.0;
     commands.spawn(ScorerBundle::new(
-        scorer_height - 10.0,
+        scorer_height,
         Vec2::new(
             (window_size.x / 2.0) + (PIPE_WIDTH / 2.0),
             scorer_pos - (window_size.y / 2.0),
