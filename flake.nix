@@ -31,8 +31,14 @@
 
         inherit (pkgs) lib;
 
+        birdFilter = path: (builtins.match ".*birdx100.png$" path) != null;
+        birdOrCargo = path: type: (birdFilter path) || (craneLib.filterCargoSources path type);
         craneLib = crane.mkLib pkgs;
-        src = craneLib.cleanCargoSource ./.;
+        src = lib.cleanSourceWith {
+          src = ./.;
+          filter = birdOrCargo;
+          name = "source";
+        };
 
         commonArgs = {
           inherit src;
@@ -84,6 +90,10 @@
           // {
             inherit cargoArtifacts;
 
+            postInstall = ''
+              mkdir $out/bin/assets
+              cp $src/assets/birdx100.png $out/bin/assets
+            '';
             postFixup = "wrapProgram $out/bin/flappy-bevy --prefix LD_LIBRARY_PATH : ${commonArgs.LD_LIBRARY_PATH}";
           }
         );
