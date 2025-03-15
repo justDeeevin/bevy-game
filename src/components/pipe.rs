@@ -6,7 +6,7 @@ use super::bird::BIRD_HEIGHT;
 
 const PIPE_WIDTH: f32 = 100.0;
 const MIN_PIPE_HEIGHT: f32 = 200.0;
-const MIN_GAP: f32 = BIRD_HEIGHT * 3.0;
+pub const MIN_GAP: f32 = BIRD_HEIGHT * 3.0;
 const PIPE_SPEED: f32 = 300.0;
 const HITBOX_GRACE: f32 = 50.0;
 
@@ -84,16 +84,19 @@ impl PipeBundle {
     }
 }
 
-pub fn spawn_pair(commands: &mut Commands, window: &Window) {
+pub fn spawn_pair(commands: &mut Commands, window: &Window, max_gap: f32) {
     debug!("Spawning pipe pair");
     let window_size = window.size();
-    let bottom_height = random_range(MIN_PIPE_HEIGHT..(window_size.y - MIN_PIPE_HEIGHT - MIN_GAP));
+    let bottom_height = random_range(MIN_PIPE_HEIGHT..=(window_size.y - MIN_PIPE_HEIGHT - MIN_GAP));
     commands.spawn(PipeBundle::new(
         bottom_height,
         PipePlacement::Bottom,
         window_size,
     ));
-    let top_height = random_range(MIN_PIPE_HEIGHT..(window_size.y - bottom_height - MIN_GAP));
+    let top_height = random_range(
+        ((window_size.y - bottom_height - max_gap).max(MIN_PIPE_HEIGHT))
+            ..=(window_size.y - bottom_height - MIN_GAP),
+    );
     commands.spawn(PipeBundle::new(top_height, PipePlacement::Top, window_size));
 
     let scorer_height = window_size.y - bottom_height - top_height;

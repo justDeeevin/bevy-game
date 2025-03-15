@@ -4,13 +4,15 @@ use bevy::{prelude::*, window::PrimaryWindow};
 use crate::{
     components::{
         bird::{jump, Bird},
-        pipe::spawn_pair,
+        pipe::{spawn_pair, MIN_GAP},
         ui::ScoreText,
     },
-    GameState, Score, SpawnTimer,
+    GameState, MaxGap, Score, SpawnTimer,
 };
 
 const ROTATE_SCALE: f32 = 0.01;
+const DIFFICULTY_SCALE: f32 = 20.0;
+const MAX_GAP_CAP: f32 = MIN_GAP * 2.0;
 
 pub fn try_jump(
     keyboard: Res<ButtonInput<KeyCode>>,
@@ -41,12 +43,16 @@ pub fn try_spawn_pipe(
     mut commands: Commands,
     time: Res<Time>,
     window_query: Query<&Window, With<PrimaryWindow>>,
+    mut max_gap: ResMut<MaxGap>,
 ) {
     if !timer.tick(time.delta()).just_finished() {
         return;
     }
     let window = window_query.single();
-    spawn_pair(&mut commands, window);
+    **max_gap -= DIFFICULTY_SCALE;
+    debug!("Max gap: {}", **max_gap);
+    let max_gap = max_gap.max(MAX_GAP_CAP);
+    spawn_pair(&mut commands, window, max_gap);
 }
 
 pub fn check_collisions(

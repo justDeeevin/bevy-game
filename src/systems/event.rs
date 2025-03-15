@@ -6,7 +6,7 @@ use crate::{
         bird::{jump, Bird},
         pipe::{spawn_pair, Pipe, Scorer},
     },
-    GameState, Score, SpawnTimer,
+    GameState, MaxGap, Score, SpawnTimer,
 };
 
 pub fn start(
@@ -14,16 +14,21 @@ pub fn start(
     window: Query<&Window, With<PrimaryWindow>>,
     mut commands: Commands,
     mut velocity: Query<&mut LinearVelocity, With<Bird>>,
+    max_gap: Res<MaxGap>,
 ) {
     debug!("Starting");
     *body.single_mut() = RigidBody::Dynamic;
     let window = window.single();
-    spawn_pair(&mut commands, window);
+    spawn_pair(&mut commands, window, **max_gap);
     let window_size = window.size();
     jump(&mut velocity.single_mut());
     commands
         .spawn(Collider::rectangle(0.0, 0.0))
         .insert(Transform::from_xyz(0.0, (-window_size.y / 2.0) - 1.0, 0.0))
+        .insert(RigidBody::Static);
+    commands
+        .spawn(Collider::rectangle(0.0, 0.0))
+        .insert(Transform::from_xyz(0.0, window_size.y / 2.0, 0.0))
         .insert(RigidBody::Static);
 }
 
@@ -45,6 +50,7 @@ pub fn clear(
     mut transform: Query<&mut Transform, With<Bird>>,
     mut timer: ResMut<SpawnTimer>,
     mut score: ResMut<Score>,
+    mut max_gap: ResMut<MaxGap>,
 ) {
     debug!("Clearing");
     for pipe in &to_delete {
@@ -58,4 +64,5 @@ pub fn clear(
     transform.rotation = Quat::IDENTITY;
     timer.reset();
     **score = 0;
+    **max_gap = 700.0;
 }

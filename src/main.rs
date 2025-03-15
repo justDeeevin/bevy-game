@@ -26,6 +26,9 @@ struct SpawnTimer(Timer);
 #[derive(Resource, Deref, DerefMut)]
 struct Score(u32);
 
+#[derive(Resource, Deref, DerefMut)]
+struct MaxGap(f32);
+
 fn main() {
     App::new()
         .add_plugins((
@@ -41,6 +44,7 @@ fn main() {
             TimerMode::Repeating,
         )))
         .insert_resource(Score(0))
+        .insert_resource(MaxGap(700.0))
         .add_systems(Startup, startup)
         .add_systems(
             Update,
