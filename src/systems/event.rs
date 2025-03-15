@@ -24,7 +24,7 @@ pub fn start(
     jump(&mut velocity.single_mut());
     commands
         .spawn(Collider::rectangle(0.0, 0.0))
-        .insert(Transform::from_xyz(0.0, (-window_size.y / 2.0) - 1.0, 0.0))
+        .insert(Transform::from_xyz(0.0, -window_size.y / 2.0, 0.0))
         .insert(RigidBody::Static);
     commands
         .spawn(Collider::rectangle(0.0, 0.0))
