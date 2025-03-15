@@ -6,8 +6,9 @@ use super::bird::BIRD_HEIGHT;
 
 const PIPE_WIDTH: f32 = 100.0;
 const MIN_PIPE_HEIGHT: f32 = 200.0;
-const MIN_GAP: f32 = BIRD_HEIGHT * 3.5;
-const PIPE_SPEED: f32 = 250.0;
+const MIN_GAP: f32 = BIRD_HEIGHT * 3.0;
+const PIPE_SPEED: f32 = 300.0;
+const HITBOX_GRACE: f32 = 50.0;
 
 #[derive(Component)]
 #[require(
@@ -77,7 +78,7 @@ impl PipeBundle {
                 placement.signum() * ((window_size.y / 2.0) - height / 2.0),
                 0.0,
             )),
-            collider: Collider::rectangle(PIPE_WIDTH, height - 20.0),
+            collider: Collider::rectangle(PIPE_WIDTH, height - HITBOX_GRACE),
             marker: Pipe,
         }
     }
